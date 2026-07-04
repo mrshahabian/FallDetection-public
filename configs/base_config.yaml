@@ -1,0 +1,66 @@
+# Base configuration for KTH Skeleton Action Recognition
+dataset:
+  root_path: "/path/to/KTH"  # Raw KTH videos: <root_path>/{action}/*.avi
+  actions:
+    - walking
+    - jogging
+    - running
+    - boxing
+    - handwaving
+    - handclapping
+  action_to_label:
+    walking: 0
+    jogging: 1
+    running: 2
+    boxing: 3
+    handwaving: 4
+    handclapping: 5
+  num_classes: 6
+  
+  # Data split strategy: 'random' or 'standard' (person-based)
+  # - 'random': Randomly splits data into train/val/test
+  # - 'standard': Person-based split (persons 1-16 train, 17-25 test for KTH)
+  split_strategy: "random"
+  
+  # For random split: ratios for train/val/test
+  train_ratio: 0.7
+  val_ratio: 0.15
+  test_ratio: 0.15
+  
+  # Training behavior:
+  # - combine_train_val: If true, combines train+val during training (recommended for random split)
+  #                      Test set is always kept separate for final evaluation
+  # - If false, uses separate train/val during training, test for final evaluation
+  combine_train_val: true  # Recommended: true for random split, false for standard split
+  
+  # Standard KTH split (persons 1-16 train, 17-25 test)
+  standard_split:
+    train_persons: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+    test_persons: [17, 18, 19, 20, 21, 22, 23, 24, 25]
+
+paths:
+  skeleton_data_root: "./data"
+  checkpoints_dir: "./checkpoints"
+  results_dir: "./results"
+  
+# Model types: 3dcnn_simple, 3dcnn_deep, 2dcnn_resnet, 2dcnn_lenet, 2dcnn (backward compat), vit, stgcn, tcnt
+# Skeleton sources: openpose, yolov11
+model:
+  type: "3dcnn_simple"
+  skeleton_source: "yolov11"  # Changed default to yolov11 (user has data for this)
+
+seed: 42
+device: "cuda"  # or "cpu"
+
+# Anomaly detection configuration for fall detection
+# When enabled, models trained on normal activities will detect falls as anomalies
+anomaly_detection:
+  enabled: true  # Set to true to enable anomaly detection mode
+  method: "hybrid"  # "confidence", "entropy", or "hybrid"
+  threshold: null  # Auto-determined from validation set during training
+  threshold_method: "percentile"  # "percentile" or "roc" (requires fall labels)
+  percentile: 95.0  # Percentile to use for threshold (e.g., 95th percentile)
+  confidence_weight: 0.6  # Weight for confidence component (hybrid method)
+  entropy_weight: 0.4  # Weight for entropy component (hybrid method)
+  use_reconstruction: false  # Future: autoencoder reconstruction error
+

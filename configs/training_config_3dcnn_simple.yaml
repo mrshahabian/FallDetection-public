@@ -1,0 +1,49 @@
+# Training configuration
+training:
+  # Data path (optional - overrides auto-detection)
+  # If specified, training will use this preprocessed directory directly
+  # If empty, will auto-detect: {skeleton_data_root}/{skeleton_source}/preprocessed
+  # Examples:
+  #   preprocessed_path: "./data/yolov11/preprocessed"
+  #   preprocessed_path: "./data/yolov11/preprocessed-50ol-32fps"
+  #   preprocessed_path: ""  # Use auto-detection
+  preprocessed_path: ""
+  
+  batch_size: 128
+  num_epochs: 64
+  learning_rate: 0.001
+  optimizer: "adam"  # adam or sgd
+  momentum: 0.9  # For SGD
+  weight_decay: 1.0849e-06
+  
+  # Learning rate scheduler
+  scheduler:
+    type: "step"  # step, cosine, plateau
+    step_size: 10
+    gamma: 0.4618
+    patience: 5  # For plateau scheduler
+    
+  # Loss function
+  loss: "cross_entropy"
+  class_weights: null  # null or list of 6 weights for class balancing
+  
+  # Training options
+  num_workers: 4
+  pin_memory: true
+  shuffle_train: true
+  
+  # Checkpointing
+  save_best_only: true
+  save_frequency: 5  # Save every N epochs (if save_best_only is false)
+  
+  # Early stopping
+  early_stopping:
+    enabled: true
+    patience: 10
+    min_delta: 0.001
+    
+  # Data augmentation (for future use)
+  augmentation:
+    temporal_dropout: 0.0  # Probability of dropping frames
+    random_crop: false
+

@@ -1,0 +1,60 @@
+# Skeleton extraction configuration
+extraction:
+  # Preprocessed data path (optional)
+  # If specified, training will use this directory directly
+  # If not specified, training will look for: {skeleton_data_root}/{skeleton_source}/preprocessed
+  # Example: "./data/yolov11/preprocessed" or "./data/yolov11/preprocessed-50ol-32fps"
+  preprocessed_path: ""  # Leave empty for auto-detection
+  
+  # Clip generation parameters
+  clip_length: 32  # Number of frames per clip (must match preprocessing)
+  overlap: 0.5  # Overlap ratio for sliding window (0.0 to 1.0)
+  
+  # Normalization options
+  normalize:
+    scale_to_01: true  # Scale coordinates to [0, 1] by image dimensions
+    center_on_hip: true  # Subtract hip/torso joint as reference
+    hip_joint_index: 8  # COCO format: 8 is mid-hip
+  
+  # Image dimensions for normalization (KTH videos are typically 160x120)
+  image_width: 160
+  image_height: 120
+  
+  # Keypoint format: COCO 17 points
+  num_joints: 17
+  num_coords: 2  # x, y
+  
+  # OpenPose settings
+  openpose:
+    # Path to OpenPose executable (if using command line)
+    binary_path: "~/openpose/build/examples/openpose/openpose.bin"  # Default installation location
+    # Path to OpenPose models directory (if using Python API)
+    model_path: "~/openpose/models"  # Default models directory
+    model_pose: "BODY_25"  # BODY_25 (25 keypoints) or COCO (18 keypoints)
+    resolution: "160x120"
+    
+    # Performance optimization settings (for low-end devices)
+    # Lower values = faster but less accurate, higher values = slower but more accurate
+    net_resolution: "-1x160"  # Network input resolution: "-1x160" (fast), "-1x320" (balanced), "-1x480" (accurate)
+    scale_number: 1  # Number of scales: 1 (fastest), 2-4 (more accurate but slower)
+    scale_gap: 0.3  # Scale gap parameter (0.3 is a good default)
+    number_people_max: 1  # Maximum number of people to detect (1 is fastest)
+    
+    # Additional performance tips:
+    # - Use net_resolution "-1x160" for fastest processing
+    # - Use scale_number 1 for single-scale detection (fastest)
+    # - Consider processing videos in smaller chunks if memory is limited
+    # - GPU acceleration (if available) will significantly speed up processing
+    
+    # If OpenPose not available, extraction will use placeholder.
+    # OpenPose is optional; YOLOv11 (below) is the default skeleton source.
+
+  # YOLOv11 settings
+  yolov11:
+    model_name: "yolo11n-pose.pt"  # or yolo11s-pose.pt, yolo11m-pose.pt, etc.
+    confidence_threshold: 0.25
+    device: "cuda"  # or "cpu"
+    
+  # Output format
+  save_format: "npz"  # npz or pickle
+

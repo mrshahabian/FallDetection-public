@@ -1,0 +1,42 @@
+# Training configuration
+training:
+  batch_size: 32
+  num_epochs: 27
+  learning_rate: 0.0002053915316499532
+  optimizer: "adamw"  # adam or sgd
+  momentum: 0.9  # For SGD
+  weight_decay: 0.00014969588307004806
+  
+  # Learning rate scheduler
+  scheduler:
+    type: "step"  # step, cosine, plateau
+    step_size: 10
+    gamma: 0.1
+    patience: 5  # For plateau scheduler
+    
+  # Loss function
+  loss: "cross_entropy"
+  class_weights: null  # null or list of 6 weights for class balancing
+  
+  # Training options
+  num_workers: 4
+  pin_memory: true
+  shuffle_train: true
+  
+  # Checkpointing
+  save_best_only: true
+  save_frequency: 5  # Save every N epochs (if save_best_only is false)
+  
+  # Early stopping
+  early_stopping:
+    enabled: true
+    patience: 10
+    min_delta: 0.001
+    
+  # Data augmentation (for future use)
+  augmentation:
+    temporal_dropout: 0.0  # Probability of dropping frames
+    random_crop: false
+
+
+

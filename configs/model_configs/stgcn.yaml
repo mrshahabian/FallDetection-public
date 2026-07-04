@@ -1,0 +1,33 @@
+# ST-GCN (Spatial-Temporal Graph Convolutional Network) Configuration
+model:
+  name: "SkeletonSTGCN"
+  input_shape: [2, 17, 32]  # [C, J, T]
+  
+  architecture:
+    num_joints: 17  # COCO 17 keypoints
+    in_channels: 2  # x, y coordinates
+    num_stages: 4  # Number of ST-GCN stages
+    base_channels: 64  # Base number of channels
+    dropout: 0.5
+    
+  # Graph structure
+  graph:
+    type: "coco17"  # COCO 17 keypoint graph
+    normalize: true  # Normalize adjacency matrix
+    
+  # Training hints
+  notes: |
+    ST-GCN models spatial-temporal relationships in skeleton sequences.
+    Uses graph convolutions to capture joint connections and temporal convolutions
+    for temporal dynamics.
+
+
+
+
+
+
+
+
+
+
+

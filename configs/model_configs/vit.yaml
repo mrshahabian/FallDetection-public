@@ -1,0 +1,30 @@
+# Vision Transformer Architecture Configuration
+# ViT now uses 2D image input like 2D CNN models
+model:
+  name: "SkeletonViT"
+  input_shape: [1, 32, 34]  # [C, H, W] where C=1, H=32 frames, W=34 (2*17 joints)
+  img_size: [32, 34]  # (height, width) for 2D image
+  
+  # Patch configuration
+  patch_size: [4, 8]  # [patch_h, patch_w] - results in 8*4 = 32 patches (32/4 * 34/8)
+  num_patches: 32
+  
+  # Embedding
+  embed_dim: 256
+  hidden_dim: 256
+  
+  # Transformer (enhanced for robustness)
+  num_layers: 8  # Increased for better representation
+  num_heads: 4  # Increased for robust multi-head attention
+  mlp_ratio: 3.727780074568463
+  dropout: 0.2216968971838151
+  attention_dropout: 0.1287134647448357
+  
+  # Classification
+  num_classes: 6
+  
+  # Positional encoding
+  use_learnable_pos_embed: true
+
+
+

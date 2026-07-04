@@ -1,0 +1,47 @@
+# 3D CNN Deep Architecture Configuration (Dense - Very Deep)
+model:
+  name: "Skeleton3DCNN_Deep"
+  input_shape: [2, 17, 32]  # [C, J, T]
+  
+  architecture:
+    # Initial conv block (increased capacity)
+    initial_conv:
+      out_channels: 64  # Increased from 32
+      kernel_size: [3, 3, 3]
+      
+    # Dense residual blocks (15 blocks total for rich spatial-temporal features)
+    # Memory optimized: removed Stage 5 (1024 channels) to fit in GPU memory
+    residual_blocks:
+      - out_channels: 64
+        num_blocks: 3  # Stage 1: Dense spatial-temporal features
+      - out_channels: 128
+        num_blocks: 4  # Stage 2: Deeper features
+      - out_channels: 256
+        num_blocks: 4  # Stage 3: Rich temporal-spatial patterns
+      - out_channels: 512
+        num_blocks: 4  # Stage 4: High-level features (final stage)
+    
+    # Pooling
+    pool_kernel: [1, 2, 2]  # Don't pool depth dimension
+    pool_stride: [1, 2, 2]
+    use_adaptive_pool: true
+    
+    # Dense fully connected layers (memory optimized while maintaining density)
+    fc_layers:
+      - hidden_dim: 2048  # Reduced from 4096 for memory efficiency
+        dropout: 0.5
+      - hidden_dim: 1024  # Reduced from 2048
+        dropout: 0.4
+      - hidden_dim: 512
+        dropout: 0.3
+      - hidden_dim: 256
+        dropout: 0.2
+    output_classes: 6
+    
+  # Training hints
+  notes: |
+    Dense 3D CNN with 15 residual blocks and dense FC layers.
+    Memory optimized version: 512 channels max (instead of 1024), 4 FC layers (instead of 5).
+    Still much denser than original version for rich spatial-temporal feature extraction.
+    Recommended batch size: 8-16 for GPUs with <4GB memory.
+

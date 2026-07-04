@@ -1,0 +1,32 @@
+# TCN + Transformer Encoder (TCNTE) Configuration
+model:
+  name: "SkeletonTCNTE"
+  input_shape: [2, 17, 32]  # [C, J, T]
+  
+  architecture:
+    num_joints: 17  # COCO 17 keypoints
+    in_channels: 2  # x, y coordinates
+    embed_dim: 128  # Embedding dimension
+    tcn_channels: [64, 128, 256]  # TCN channel sizes
+    num_transformer_layers: 4  # Number of transformer layers
+    num_heads: 8  # Number of attention heads
+    mlp_ratio: 4.0  # MLP expansion ratio
+    dropout: 0.1
+    
+  # Training hints
+  notes: |
+    TCNTE combines Temporal Convolutional Networks (TCN) for temporal modeling
+    with Transformer encoders for attention mechanisms. TCN captures temporal
+    dependencies with dilated convolutions, while Transformer models long-range
+    dependencies through self-attention.
+
+
+
+
+
+
+
+
+
+
+

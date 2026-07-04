@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity Recognition Demo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Activity Recognition from Video</h1>
+            <p class="subtitle">Upload a video and classify activities using multiple deep learning models</p>
+        </header>
+
+        <main>
+            <!-- Video Upload Section -->
+            <section class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-content">
+                        <svg class="upload-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <p class="upload-text">Drag and drop a video file here, or click to browse</p>
+                        <p class="upload-hint">Supported formats: MP4, AVI, MOV, MKV, WEBM (Max 500MB)</p>
+                    </div>
+                    <input type="file" id="fileInput" accept="video/*" style="display: none;">
+                </div>
+                <div id="uploadStatus" class="upload-status"></div>
+            </section>
+
+            <!-- Video Display Section -->
+            <section class="video-section" id="videoSection" style="display: none;">
+                <h2>Uploaded Video</h2>
+                <div class="video-container">
+                    <video id="videoPlayer" controls>
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </section>
+
+            <!-- Model Selection Section -->
+            <section class="models-section" id="modelsSection" style="display: none;">
+                <h2>Select Model for Classification</h2>
+                <p class="vlm-note">These models are trained on the KTH 6-activity dataset (walking, jogging, running, boxing, handwaving, handclapping) — not on fall/no-fall labels.</p>
+                <div class="anomaly-toggle" style="margin-bottom: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="checkbox" id="anomalyDetectionToggle" style="margin-right: 10px; width: 18px; height: 18px; cursor: pointer;">
+                        <div>
+                            <strong style="font-size: 1.05em; color: #333;">Enable Anomaly Detection (Fall Detection)</strong>
+                            <p style="margin: 5px 0 0 0; font-size: 0.9em; color: #666;">
+                                When enabled, these KTH activity models will detect falls as anomalies using confidence and entropy metrics
+                                (applies only to the models below, not to the supervised Fall Detection models further down).
+                                Models must be trained with anomaly detection enabled.
+                            </p>
+                        </div>
+                    </label>
+                </div>
+                <div class="model-buttons">
+                    <button class="model-btn" data-model="3dcnn_simple">
+                        <span class="model-name">3D CNN Simple</span>
+                        <span class="model-desc">Fast baseline model</span>
+                    </button>
+                    <button class="model-btn" data-model="3dcnn_deep">
+                        <span class="model-name">3D CNN Deep</span>
+                        <span class="model-desc">Enhanced depth model</span>
+                    </button>
+                    <button class="model-btn" data-model="2dcnn_resnet">
+                        <span class="model-name">2D CNN ResNet</span>
+                        <span class="model-desc">Custom ResNet-18</span>
+                    </button>
+                    <button class="model-btn" data-model="2dcnn_lenet">
+                        <span class="model-name">2D CNN LeNet</span>
+                        <span class="model-desc">Regularized LeNet</span>
+                    </button>
+                    <button class="model-btn" data-model="vit">
+                        <span class="model-name">Vision Transformer</span>
+                        <span class="model-desc">Attention mechanism</span>
+                    </button>
+                    <button class="model-btn" data-model="stgcn">
+                        <span class="model-name">ST-GCN</span>
+                        <span class="model-desc">Graph convolutional</span>
+                    </button>
+                    <button class="model-btn" data-model="tcnt">
+                        <span class="model-name">TCNTE</span>
+                        <span class="model-desc">TCN + Transformer</span>
+                    </button>
+                    <button class="model-btn" data-model="simple_fall">
+                        <span class="model-name">Simple Fall Detection</span>
+                        <span class="model-desc">Pose-based fall detection</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Supervised Fall/No-Fall Section (same architectures, trained on binary fall labels) -->
+            <section class="models-section" id="fallCnnSection" style="display: none;">
+                <h2>Fall Detection Models (Supervised CNN / ViT)</h2>
+                <p class="vlm-note">These use the same skeleton-based architectures as above, but trained directly on Fall vs. No-Fall labels instead of KTH activities (see RESULTS_FOR_PAPER.md).</p>
+                <div class="model-buttons">
+                    <button class="model-btn" data-model="2dcnn_resnet_fall">
+                        <span class="model-name">2D CNN ResNet (Fall)</span>
+                        <span class="model-desc">Custom ResNet-18, fall/no-fall (~97.5% test accuracy)</span>
+                    </button>
+                    <button class="model-btn" data-model="3dcnn_simple_fall">
+                        <span class="model-name">3D CNN Simple (Fall)</span>
+                        <span class="model-desc">Fast baseline, fall/no-fall (~100% test accuracy)</span>
+                    </button>
+                    <button class="model-btn" data-model="vit_fall">
+                        <span class="model-name">Vision Transformer (Fall)</span>
+                        <span class="model-desc">Attention mechanism, fall/no-fall (~100% test accuracy)</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- VLM Section (Separate for Fall Detection and Description) -->
+            <section class="vlm-section" id="vlmSection" style="display: none;">
+                <h2>VLM Models (Fall Detection & Description)</h2>
+                <p class="vlm-note">Note: VLM models are specialized for fall detection and video description, not for general activity recognition. Both fall detection modes use a frozen CLIP (ViT-B/32) backbone over 32-frame windows (50% overlap).</p>
+                <div class="model-buttons">
+                    <button class="model-btn vlm-btn" data-vlm-mode="zero_shot">
+                        <span class="model-name">VLM Zero-Shot Fall Detection</span>
+                        <span class="model-desc">CLIP + 198 balanced fall/non-fall prompts, no training (~92.5% test accuracy)</span>
+                    </button>
+                    <button class="model-btn vlm-btn" data-vlm-mode="few_shot">
+                        <span class="model-name">VLM Few-Shot Fall Detection</span>
+                        <span class="model-desc">CLIP + trained linear classifier on 10-shot examples (~100% test accuracy)</span>
+                    </button>
+                    <button class="model-btn vlm-btn" data-vlm-mode="video_description">
+                        <span class="model-name">VLM Window Description</span>
+                        <span class="model-desc">Describe each time window</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="resultsSection" style="display: none;">
+                <h2>Classification Results</h2>
+                <div class="results-header">
+                    <div class="model-info">
+                        <span class="model-label">Model:</span>
+                        <span id="currentModel" class="model-value">-</span>
+                    </div>
+                    <div class="prediction-info">
+                        <span class="prediction-label">Predicted:</span>
+                        <span id="predictedClass" class="prediction-value">-</span>
+                        <span id="predictionConfidence" class="confidence-value">-</span>
+                    </div>
+                </div>
+                <div class="probabilities-container" id="probabilitiesContainer">
+                    <!-- Probabilities will be inserted here -->
+                </div>
+            </section>
+
+            <!-- Loading Overlay -->
+            <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+                <div class="loading-spinner"></div>
+                <p class="loading-text">Processing video...</p>
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
+

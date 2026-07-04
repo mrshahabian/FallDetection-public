@@ -1,0 +1,40 @@
+# 3D CNN Simple Architecture Configuration
+model:
+  name: "Skeleton3DCNN_Simple"
+  input_shape: [2, 17, 32]  # [C, J, T]
+  
+  layers:
+    conv1:
+      out_channels: 32
+      kernel_size: [3, 3, 3]
+      stride: [1, 1, 1]
+      padding: [1, 1, 1]
+    pool1:
+      kernel_size: [2, 2, 2]
+      stride: [2, 2, 2]
+      
+    conv2:
+      out_channels: 64
+      kernel_size: [3, 3, 3]
+      stride: [1, 1, 1]
+      padding: [1, 1, 1]
+    pool2:
+      kernel_size: [2, 2, 2]
+      stride: [2, 2, 2]
+      
+    fc1:
+      hidden_dim: 512
+      dropout: 0.12637163258158135
+    fc2:
+      num_classes: 6
+
+
+
+
+
+
+
+
+
+
+

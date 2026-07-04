@@ -1,0 +1,107 @@
+# VLM (Vision-Language Model) Configuration for Fall Detection
+# This configuration supports zero-shot and few-shot activity recognition using CLIP
+
+# CLIP Model Configuration
+model:
+  # HuggingFace model identifier
+  # Options: 
+  #   - "openai/clip-vit-base-patch32" (recommended, balanced speed/accuracy)
+  #   - "openai/clip-vit-large-patch14" (higher accuracy, slower)
+  #   - "openai/clip-vit-base-patch16" (alternative base model)
+  clip_model_name: "openai/clip-vit-base-patch32"
+  
+  # Device: "cuda" (if GPU available) or "cpu"
+  # Auto-detection: if "auto", will use CUDA if available, else CPU
+  device: "auto"
+
+# Video Processing Configuration
+video:
+  # Number of frames to sample uniformly from each video
+  num_frames: 8
+  
+  # Frame sampling strategy: "uniform" (default) or "temporal" (more frames at start/end)
+  sampling_strategy: "uniform"
+  
+  # Target frame size for preprocessing (CLIP models typically use 224x224)
+  target_size: 224
+
+# Zero-Shot Configuration
+zero_shot:
+  # Text prompts for zero-shot classification
+  # NOTE: Prompts are now loaded from evaluation/prompts.py (198 balanced prompts: 99 fall, 99 non-fall)
+  # The prompts defined here are IGNORED - the evaluator always uses balanced prompts
+  # This ensures no bias and better accuracy
+  # Old prompts (kept for reference, but not used):
+  #   prompts:
+  #     - "a person falling down to the ground"
+  #     - "someone collapsing and falling"
+  #     - "a person losing balance and falling"
+  #     - "a person tripping and falling"
+  #     - "someone falling over"
+  #     - "a person walking normally on the ground"
+  #     - "a person standing upright and stable"
+  #     - "a person sitting down normally"
+  #     - "a person moving around safely"
+  prompts: []  # Empty - will use balanced prompts from evaluation/prompts.py
+  
+  # Temperature for softmax when converting similarities to probabilities
+  # Higher temperature = softer probabilities (more uniform)
+  # Lower temperature = sharper probabilities (more confident)
+  # Lower values (0.1-0.5) work better when similarities are close together
+  temperature: 0.3
+  
+  # Aggregation method for multi-frame videos: "mean" or "max"
+  # "mean": average similarities across frames
+  # "max": take maximum similarity across frames
+  aggregation: "mean"
+
+# Few-Shot Training Configuration
+few_shot:
+  # Learning rate for training the linear classifier
+  learning_rate: 0.001
+  
+  # Number of training epochs
+  epochs: 50
+  
+  # Batch size for training
+  batch_size: 8
+  
+  # Optimizer: "adam", "sgd", or "adamw"
+  optimizer: "adam"
+  
+  # Weight decay for regularization
+  weight_decay: 0.0001
+  
+  # Validation split ratio (if validation set is created from training data)
+  val_ratio: 0.2
+  
+  # Early stopping patience (stop if no improvement for N epochs)
+  early_stopping_patience: 10
+  
+  # Classification threshold for binary classification (fall vs non-fall)
+  # Lower threshold (0.45) works better for zero-shot detection with CLIP
+  threshold: 0.45
+
+# Paths Configuration
+paths:
+  # Directory for saving trained classifiers
+  checkpoints_dir: "./vlm_checkpoints"
+  
+  # Directory for saving results (probabilities, predictions, etc.)
+  results_dir: "./vlm_results"
+  
+  # Directory for few-shot training data (optional, can specify paths directly in code)
+  data_dir: "./vlm_data"
+  
+  # Subdirectories for fall and non-fall videos (if using structured dataset)
+  fall_videos_dir: "./vlm_data/fall"
+  non_fall_videos_dir: "./vlm_data/non_fall"
+
+# Logging Configuration
+logging:
+  # Verbosity level: "DEBUG", "INFO", "WARNING", "ERROR"
+  level: "INFO"
+  
+  # Print progress bars during processing
+  show_progress: true
+

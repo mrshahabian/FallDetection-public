@@ -1,0 +1,90 @@
+# Hyperparameter tuning configuration with Optuna
+tuning:
+  # Number of Optuna trials
+  n_trials: 50
+  
+  # Epochs per trial (keep low for faster tuning)
+  n_epochs_per_trial: 20
+  
+  # Optuna sampler settings
+  sampler:
+    type: "TPE"  # Tree-structured Parzen Estimator
+    seed: 42
+  
+  # Pruner settings (early stopping for unpromising trials)
+  pruner:
+    type: "median"
+    n_startup_trials: 5  # Number of trials before pruning starts
+    n_warmup_steps: 5    # Number of epochs before pruning in each trial
+  
+  # Hyperparameter search space
+  search_space:
+    learning_rate:
+      type: "log_uniform"
+      low: 1.0e-5
+      high: 1.0e-2
+    
+    batch_size:
+      type: "categorical"
+      # choices: [8, 16, 32, 64, 128]
+      choices: [16]
+    
+    optimizer:
+      type: "categorical"
+      choices: ["adam", "sgd", "adamw"]
+    
+    weight_decay:
+      type: "log_uniform"
+      low: 1.0e-6
+      high: 1.0e-3
+    
+    dropout:
+      type: "uniform"
+      low: 0.1
+      high: 0.7
+    
+    scheduler:
+      type: "categorical"
+      choices: ["step", "cosine", "none"]
+    
+    # Scheduler-specific params (only used if scheduler is selected)
+    step_size:
+      type: "int"
+      low: 5
+      high: 15
+    
+    gamma:
+      type: "uniform"
+      low: 0.1
+      high: 0.5
+    
+    # Model-specific params
+    # For 3D CNN
+    first_filters:
+      type: "categorical"
+      choices: [16, 32, 64]
+    
+    # For ViT
+    embed_dim:
+      type: "categorical"
+      choices: [64, 128, 256]
+    
+    num_layers:
+      type: "int"
+      low: 2
+      high: 6
+    
+    num_heads:
+      type: "categorical"
+      choices: [2, 4, 8]
+
+
+
+
+
+
+
+
+
+
+
