@@ -92,6 +92,10 @@ python app.py
 
 Then open `http://localhost:5000`, upload a video, and choose a model to run inference.
 
+## Demo
+[![Watch the demo](https://img.youtube.com/vi/VIDEO_ID/maxresdefault.jpg)](https://youtu.be/WSCsatEl120)
+
+
 ## Preparing Training Data
 
 Datasets aren't included in this repository, and the KTH activity models train on
