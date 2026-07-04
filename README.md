@@ -6,7 +6,8 @@ vision-language model (zero-shot and few-shot), served through a Flask web app.
 
 ## Demo
 
-<!-- Add your demo video link here, e.g. a YouTube link or embedded GIF -->
+[![Watch the demo](https://img.youtube.com/vi/WSCsatEl120/maxresdefault.jpg)](https://youtu.be/WSCsatEl120)
+
 
 ## Overview
 
@@ -91,10 +92,6 @@ python app.py
 ```
 
 Then open `http://localhost:5000`, upload a video, and choose a model to run inference.
-
-## Demo
-[![Watch the demo](https://img.youtube.com/vi/WSCsatEl120/maxresdefault.jpg)](https://youtu.be/WSCsatEl120)
-
 
 ## Preparing Training Data
 
